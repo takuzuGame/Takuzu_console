@@ -1,5 +1,15 @@
 package jeux;
+import java.io.*;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.awt.*;
+import javax.swing.*;
 import java.util.*;
+import java.util.List;
+
+import javax.swing.JButton;
 public class jeu {
 	public static class grille{
 		public int n;
@@ -34,46 +44,6 @@ public class jeu {
 		for(int j=0;j<g.n;j++) {
 			g.tab[i][j]=li.l[j];
 		}
-		return(g);
-	}
-	public static grille corrigeCond1(grille g) {//corriger la grille si elle contient plus que deux 0 ou deux 1 successifs
-		int nb;
-		for(int i=0;i<g.n-2;i++) {
-			for (int j=0;j<g.n-2;j++) {
-				if((testCel(g.tab[i][j],g.tab[i][j+1])==1)&&(testCel(g.tab[i][j],g.tab[i][j+2])==1)) {
-					nb =(int)(Math.random() * 3);
-					g.tab[i][j+nb]=corrigeCel(g.tab[i][j+nb]);
-				}
-				if((testCel(g.tab[i][j],g.tab[i+1][j])==1)&&((testCel(g.tab[i][j],g.tab[i+2][j])==1))) {
-					nb =(int)(Math.random() * 3);
-					g.tab[i+nb][j]=corrigeCel(g.tab[i+nb][j]);
-				}
-			}
-		}
-		for (int j=0;j<g.n-2;j++) {
-			if((testCel(g.tab[g.n-1][j],g.tab[g.n-1][j+1])==1)&&(testCel(g.tab[g.n-1][j],g.tab[g.n-1][j+2])==1)) {
-				nb =(int)(Math.random() * 3);
-				g.tab[g.n-1][j+nb]=corrigeCel(g.tab[g.n-1][j+nb]);
-			}
-			}
-		for (int i=0;i<g.n-2;i++) {
-			if((testCel(g.tab[i][g.n-2],g.tab[i+1][g.n-2])==1)&&((testCel(g.tab[i][g.n-2],g.tab[i+2][g.n-2])==1))) {
-				nb =(int)(Math.random() * 3);
-				g.tab[i+nb][g.n-2]=corrigeCel(g.tab[i+nb][g.n-2]);
-			}
-			}
-		for (int j=0;j<g.n-2;j++) {
-			if((testCel(g.tab[g.n-2][j],g.tab[g.n-2][j+1])==1)&&(testCel(g.tab[g.n-2][j],g.tab[g.n-2][j+2])==1)) {
-				nb =(int)(Math.random() * 3);
-				g.tab[g.n-2][j+nb]=corrigeCel(g.tab[g.n-2][j+nb]);
-			}
-			}
-		for (int i=0;i<g.n-2;i++) {
-			if((testCel(g.tab[i][g.n-1],g.tab[i+1][g.n-1])==1)&&((testCel(g.tab[i][g.n-1],g.tab[i+2][g.n-1])==1))) {
-				nb =(int)(Math.random() * 3);
-				g.tab[i+nb][g.n-1]=corrigeCel(g.tab[i+nb][g.n-1]);
-			}
-			}
 		return(g);
 	}
 	public static grille viderCellules(grille g) {
@@ -137,10 +107,6 @@ public class jeu {
 			}while(a<g.n);
 	return(g);
 	}
-	public static grille corrigeGrille(grille g) {
-		g=corrigeCond1(g);
-		return(g);
-	}
 	public static grille viderGrille(grille g) {
 		for(int i=0;i<g.n;i++) {
 			for(int j=0;j<g.n;j++) {
@@ -158,23 +124,6 @@ public class jeu {
 		}
 	return(g);
 	}
-	public static grille manuelGrille(int taille) {
-		grille g=new grille();
-		g.n=taille;
-		cel[][] tableau=new cel[g.n][g.n];
-		for(int i=0;i<g.n;i++) {
-			int m=i+1;
-			for(int j=0;j<g.n;j++) {
-				int n=j+1;
-				do {
-				System.out.print("tab["+m+"]["+n+"]=");
-				tableau[i][j]=creerCel(i,j);
-				}while(testCel(tableau[i][j])!=1);
-				}
-		}
-		g.tab=tableau;
-		return(g);
-	}
 	public static grille initial(int taille) {//initialiser la matrice avec des cellules aleatoires
 		grille g=new grille();
 		g.n=taille;
@@ -188,10 +137,9 @@ public class jeu {
 		return(g);
 	}
 	public static grille modifGrille(grille g) {
-		int t=0;
 		int i,j;
 		cel c=new cel();
-		System.out.print("\nchoisir les coordonn�e du case que vous voulez acc�der \n-ecrire i et j\n");
+		System.out.print("\nchoisir les coordonn�e du case que vous voulez acc�der\n-ecrire i et j\n");
 		Scanner sc=new Scanner(System.in);
 		i=sc.nextInt();
 		j=sc.nextInt();
@@ -240,6 +188,47 @@ public class jeu {
 		u =(int)(Math.random() * 14);
 		g=remplirLigne(g,0,m.poss[u]);
 		t[u]=1;
+		if(u%2==0) {
+			g=remplirLigne(g,1,m.poss[u+1]);
+			t[u+1]=1;
+		}
+		else {
+			g=remplirLigne(g,1,m.poss[u-1]);
+			t[u-1]=1;
+		}
+		for(int i=1;i<g.n;i++) {
+			if(i%2==0) {
+		do
+		u =(int)(Math.random() * 14);
+		while(t[u]==1);
+		if(t[u]==0 && verifCond(g,i,m.poss[u])==1) {
+			t[u]=1;
+			g=remplirLigne(g,i,m.poss[u]);
+			if(u%2==0) {
+				g=remplirLigne(g,i+1,m.poss[u+1]);
+				t[u+1]=1;
+			}
+			else {
+				g=remplirLigne(g,i+1,m.poss[u-1]);
+				t[u-1]=1;
+			}
+		}
+		else {
+			i--;
+		}
+		}
+		}
+		return(g);
+		
+		/*
+		 * int [] t=new int[14];
+		int u;
+		for(int i=0;i<14;i++) {
+			t[i]=0;
+			}
+		u =(int)(Math.random() * 14);
+		g=remplirLigne(g,0,m.poss[u]);
+		t[u]=1;
 		do {
 		u =(int)(Math.random() * 14);
 		}while(t[u]==1);
@@ -255,6 +244,7 @@ public class jeu {
 			i--;
 		}
 		return(g);
+		*/
 	}
 	public static grille initialGrille8(init8 m,grille g) {
 		int [] t=new int[34];
@@ -292,24 +282,6 @@ public class jeu {
 		}
 		else {
 			i--;
-			/*if(i==g.n-2) {
-				int n0=0;
-				int n1=0;
-				for(int p=0;p<g.n;p++){
-					for(int q=0;q<g.n;q++) {
-					if(g.tab[i][q].val==0)
-						n0++;
-					if(g.tab[i][q].val==1)
-						n1++;
-				}
-					if(n1==g.n/2)
-				g.tab[i][p].val=0;
-					if(n0==g.n/2)
-				g.tab[i][p].val=1;
-				}
-			}
-			*/
-			//System.out.println(i);
 		}
 		}
 		}
@@ -318,6 +290,15 @@ public class jeu {
 	public static grille remplirLigne(grille g,int i,int []l) {
 		for(int j=0;j<g.n;j++) {
 			g.tab[i][j].val=l[j];
+		}
+		return(g);
+	}
+	public static grille reset(grille g) {
+		for(int i=0;i<g.n;i++) {
+			for(int j=0;j<g.n;j++) {
+				if (g.tab[i][j].modifiable==1)
+					g.tab[i][j].val=-1;
+			}
 		}
 		return(g);
 	}
@@ -331,16 +312,6 @@ public class jeu {
 				}
 		}
 		return(g);
-	}
-	public static void afficheLigne(ligne li) {
-		for(int j=0;j<li.n;j++) {
-			afficheCel(li.l[j]);
-		}
-	}
-	public static void afficheCol(col co) {
-		for(int j=0;j<co.n;j++) {
-			afficheCel(co.c[j]);
-		}
 	}
 	public static String afficheTemps(chrono c) {
 		String s,heur,min,sec;
@@ -360,7 +331,7 @@ public class jeu {
 			sec="0"+dure_sec;
 		}else
 			sec=dure_sec+"";
-		s="temps �coul� est : "+heur+":"+min+":"+sec;
+		s=heur+":"+min+":"+sec;
 	
 	return(s);
 	}
@@ -369,6 +340,164 @@ public class jeu {
 			System.out.print("X  ");
 		else
 		System.out.print(c.val+"  ");
+	}
+	public static void ecrireFichier(String msg, String n) {
+		    ObjectOutputStream oos;
+		    try {
+		      oos = new ObjectOutputStream(
+		              new BufferedOutputStream(
+		                new FileOutputStream(
+		                  new File(n),true)));
+		       		      //Nous allons �crire chaque objet Game dans le fichier
+		      oos.writeObject(new String(msg));
+		      //Ne pas oublier de fermer le flux !
+		      oos.close();
+		     
+		        	
+		    } catch (FileNotFoundException e) {
+		      e.printStackTrace();
+		    } catch (IOException e) {
+		      e.printStackTrace();
+		    }     	
+	}
+	public static void readFichier(String n) {
+		  // The name of the file to open.
+        String fileName = n;
+
+        // This will reference one line at a time
+        String line = null;
+
+        try {
+            // FileReader reads text files in the default encoding.
+            FileReader fileReader = 
+                new FileReader(fileName);
+
+            // Always wrap FileReader in BufferedReader.
+            BufferedReader bufferedReader = 
+                new BufferedReader(fileReader);
+
+            while((line = bufferedReader.readLine()) != null) {
+                System.out.println(line);
+            }   
+
+            // Always close files.
+            bufferedReader.close();         
+        }
+        catch(FileNotFoundException ex) {
+            System.out.println(
+                "Unable to open file '" + 
+                fileName + "'");                
+        }
+        catch(IOException ex) {
+            System.out.println(
+                "Error reading file '" 
+                + fileName + "'");                  
+            // Or we could just do this: 
+            // ex.printStackTrace();
+        }
+	}
+	public static List<score> getFichier(String n) {
+		  // The name of the file to open.
+        String fileName = n;
+        String s=null;
+        List<score> table = new ArrayList<score>();
+        // This will reference one line at a time
+        String line = null;
+
+        try {
+            // FileReader reads text files in the default encoding.
+            FileReader fileReader = 
+                new FileReader(fileName);
+
+            // Always wrap FileReader in BufferedReader.
+            BufferedReader bufferedReader = 
+                new BufferedReader(fileReader);
+
+            while((line = bufferedReader.readLine()) != null) {
+            	s=line;
+            	score sc=creerScore(s);
+            	table.add(sc);
+            }   
+
+            // Always close files.
+            bufferedReader.close();         
+        }
+        catch(FileNotFoundException ex) {
+            System.out.println(
+                "Unable to open file '" + 
+                fileName + "'");                
+        }
+        catch(IOException ex) {
+            System.out.println(
+                "Error reading file '" 
+                + fileName + "'");                  
+            // Or we could just do this: 
+            // ex.printStackTrace();
+        }
+        try {			//vider le fichier
+        	// append = false
+        	FileWriter fw =new FileWriter(fileName, false);
+        	fw.write("");
+        	fw.close();
+        } catch (IOException e) {
+        	e.printStackTrace();
+        } 
+        return(table);
+	}
+	public static score creerScore(String ch) {
+		score scor=new score();
+		String t=ch.substring(ch.length()-8);
+		int s = Integer.parseInt(t.substring(t.length()-2));	
+		int m = Integer.parseInt(t.substring(t.length()-5,t.length()-3));
+		int h = Integer.parseInt(t.substring(0,2));
+		scor.duree=h*3600+m*60+s;
+		t=ch.substring(ch.indexOf(":")+1);
+		scor.name=t.substring(0,t.indexOf(":"));
+		return(scor);
+	}
+	public static void setFichier(List<score> table, String name) {
+		String line=new String();
+		for(int i=0;i<table.size();i++) {
+			String s,heur,min,sec;
+			long dure_heur=table.get(i).duree/3600;
+			long dure_min=table.get(i).duree/60-(dure_heur*60);
+			long dure_sec=table.get(i).duree-(dure_min*60)-(dure_heur*3600);
+			if(dure_heur<10) {
+				heur="0"+dure_heur;
+			}
+			else
+				heur=dure_heur+"";
+			if(dure_min<10) {
+				min="0"+dure_min;
+			}else
+				min=dure_min+"";
+			if(dure_sec<10) {
+				sec="0"+dure_sec;
+			}else
+				sec=dure_sec+"";
+			s=heur+":"+min+":"+sec;
+			int k=i+1;
+			String ch=" "+k+" : "+table.get(i).name+" : "+s+"\n";
+			ecrireFichier(ch,name);
+			
+			
+		}
+	}
+	public static List<score> rangerScore(List<score> table){
+		for(int i=0;i<table.size()-1;i++) {
+			for(int j=i+1;j<table.size();j++) {
+				score sc1=table.get(i);
+				score sc2=table.get(j);
+				if(sc2.duree<sc1.duree) {
+					score sc=sc1;
+					sc1=sc2;
+					sc2=sc;
+				}
+				table.set(i,sc1);
+				table.set(j,sc2);
+			}
+		}
+		return(table);
 	}
 	public static void afficheGrille(grille g) {//jolie ad=ffichage de oute la grille
 		System.out.print("\n     ");
@@ -444,6 +573,18 @@ public class jeu {
 		if((choix!=1)&&(choix!=2)) {
     	do{	
 			System.out.print("choix invalid , veuillez re�ssayez\n1- choisir la difficult�e\n2- Visualiser les meilleurs scores\\n");
+    		choix=sc.nextInt();
+	    }while((choix!=1)&&(choix!=2));
+	}
+    	return(choix);
+	}
+	public static int getChoice3() {
+    	int choix;
+		Scanner sc = new Scanner(System.in);
+		choix=sc.nextInt();
+		if((choix!=1)&&(choix!=2)) {
+    	do{	
+			System.out.print("choix invalid , veuillez re�ssayez\n1- Retourner au menu principale      2- Quitter\n");
     		choix=sc.nextInt();
 	    }while((choix!=1)&&(choix!=2));
 	}
@@ -677,21 +818,6 @@ public class jeu {
 		}
 	return(1);
 	}
-	public static int cnt(ligne li) {
-		int s=0;
-		for(int i=0; i<li.n;i++) {
-			s+=li.l[i].val;
-		}
-		return(s);
-	}
-	public static int cnt(col li) {
-		int s=0;
-		for(int i=0; i<li.n;i++) {
-			s+=li.c[i].val;
-		}
-		return(s);
-	}
-	
 	public static chrono debut(chrono c) {
 		c.td=System.currentTimeMillis();
 		c.tf=0;
@@ -703,15 +829,23 @@ public class jeu {
 		c.dure=c.tf-c.td;
 		return(c);
 	}
+
 	public static void main(String[] args){
-		grille gr,f;
+	    grille gr,f;
 		String s;
-		int choix1,choix2,ordre;
+		List<score> table;
+		int ret=0,ch=0;
+	    int choix1,choix2,ordre;
 		init4 m4=new init4();
 		init6 m6=new init6();
 		init8 m8=new init8();
 		chrono c=new chrono();
-		System.out.print("JEU TAKUZU\n1- choisir la difficult�e\n2- Visualiser les meilleurs scores\n");
+
+		System.out.print("JEU TAKUZU\nVeuillez taper votre nom\n");
+		Scanner sc=new Scanner(System.in);
+		String name=sc.nextLine();
+	do {
+		System.out.print("1- Choisir la difficultée\n2- Visualiser les meilleurs scores\n");
 		choix1=getChoice1();
 		if(choix1==1) {
 			System.out.print("1- facile (4*4)   2- moyenne (6*6)   3- difficile (8*8)\n");
@@ -725,17 +859,27 @@ public class jeu {
 				c=debut(c);
 				afficheGrille(f);
 				do {
+					
 					modifGrille(f);
 					afficheGrille(f);
 				}while(nonVideGrille(f)!=1);
 				if(verifGrille(f,gr)==1) {
 					c=fin(c);
 					s=afficheTemps(c);
+					ecrireFichier(0+" : "+name+" : "+s+"\n","scores1.txt");
+					table=getFichier("scores1.txt");
+					table=rangerScore(table);
+					setFichier(table,"scores1.txt");
+					table.clear();
 					System.out.printf("<<<<<<<<<---------  BRAVOOOO !   YOU WIN  --------->>>>>>>>>\n");
-					System.out.printf("<<<<<<<<<---------  "+s+"  --------->>>>>>>>>\n");
+					System.out.printf("<<<<<<<<<---------  le temps écoulé est  "+s+"  --------->>>>>>>>>\n");
+					System.out.println("veuillez retourner au menu principale\n1- Retourner au menu principale      2- Quitter");
 				}
-				else
-					System.out.printf("SORRY    YOU LOOOOSE");
+				else {
+					System.out.println("SORRY    YOU LOOOOSE  voici la correction");
+					afficheGrille(gr);
+					System.out.println("veuillez retourner au menu principale\n1- Retourner au menu principale      2- Quitter");
+			}
 			}
 			else if(choix2==2){
 				ordre=6;
@@ -753,11 +897,20 @@ public class jeu {
 				if(verifGrille(f,gr)==1) {
 					c=fin(c);
 				s=afficheTemps(c);
+				ecrireFichier(0+" : "+name+" : "+s+"\n","scores2.txt");
+				table=getFichier("scores2.txt");
+				table=rangerScore(table);
+				setFichier(table,"scores2.txt");
+				table.clear();
 				System.out.printf("<<<<<<<<<---------  BRAVOOOO !   YOU WIN  --------->>>>>>>>>\n");
-				System.out.printf("<<<<<<<<<---------  "+s+"  --------->>>>>>>>>\n");
+				System.out.printf("<<<<<<<<<---------  le temps écoulé est  "+s+"  --------->>>>>>>>>\n");
+				System.out.println("veuillez retourner au menu principale\n1- Retourner au menu principale      2- Quitter");
 				}
-				else
-					System.out.printf("SORRY    YOU LOOOOSE");
+				else {
+					System.out.println("SORRY    YOU LOOOOSE  voici la correction");
+					afficheGrille(gr);
+					System.out.println("veuillez retourner au menu principale\n1- Retourner au menu principale      2- Quitter");
+			}
 			}else if (choix2==3){
 				ordre=8;
 				gr=initial(ordre);
@@ -772,16 +925,36 @@ public class jeu {
 					afficheGrille(f);
 				}while(nonVideGrille(f)!=1);
 				if(verifGrille(f,gr)==1) {
-					c=fin(c);
+				c=fin(c);
 				s=afficheTemps(c);
+				ecrireFichier(0+" : "+name+" : "+s+"\n","scores3.txt");
+				table=getFichier("scores3.txt");
+				table=rangerScore(table);
+				setFichier(table,"scores3.txt");
+				table.clear();
 				System.out.printf("<<<<<<<<<---------  BRAVOOOO !   YOU WIN  --------->>>>>>>>>\n");
-				System.out.printf("<<<<<<<<<---------  "+s+"  --------->>>>>>>>>\n");
+				System.out.printf("<<<<<<<<<---------  le temps écoulé est  "+s+"  --------->>>>>>>>>\n");
+				System.out.println("veuillez retourner au menu principale\n1- Retourner au menu principale      2- Quitter");
 				}
-				else
-					System.out.printf("SORRY    YOU LOOOOSE");
+				else {
+					System.out.println("SORRY    YOU LOOOOSE  voici la correction");
+					afficheGrille(gr);
+					System.out.println("Veuillez retourner au menu principale\n1- Retourner au menu principale      2- Quitter");
+			}
 			}
 		}	
 		else if(choix1==2) {
+			System.out.print("Choisir :\n1-Scores du niveau facile    2-Scores du niveau moyenne   3-Scores du niveau difficiles");
+			ch=getChoice2();
+			if(ch==1)
+				readFichier("scores1.txt");
+			else if (ch==2)
+				readFichier("scores2.txt");
+			else
+				readFichier("scores3.txt");
+			System.out.println("Veuillez retourner au menu principale\n1- Retourner au menu principale      2- Quitter");
 		}
+		ret=getChoice3();
+	}while(ret==1);
 	}
 }
