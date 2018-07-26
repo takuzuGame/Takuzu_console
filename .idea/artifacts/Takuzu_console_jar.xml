@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="Takuzu_console:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/Takuzu_console_jar</output-path>
+    <root id="archive" name="Takuzu_console.jar">
+      <element id="module-output" name="Takuzu_console" />
+    </root>
+  </artifact>
+</component>
