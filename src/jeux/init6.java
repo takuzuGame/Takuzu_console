@@ -1,6 +1,6 @@
 package jeux;
-
-public class init6 {//initialisation du grille de taille 6*6 
+//les possibilitées initialisation du grille de taille 6*6
+public class init6 {
 	int [][]poss= {{0,0,1,0,1,1},{1,1,0,1,0,0},{0,0,1,1,0,1},{1,1,0,0,1,0},
 			{0,1,0,0,1,1},{1,0,1,1,0,0},{0,1,0,1,0,1},{1,0,1,0,1,0},{0,1,1,0,1,0},{1,0,0,1,0,1},
 			{0,1,0,1,1,0},{1,0,1,0,0,1},{0,1,1,0,0,1},{1,0,0,1,1,0}};

@@ -1,3 +1,5 @@
+
+// c'est la classe main de projet
 package jeux;
 import java.io.*;
 import java.nio.charset.Charset;
@@ -30,8 +32,8 @@ public class Main {
 		c.indj=j;
 		c.modifiable=1;
 		return(c);
-	}
-	public static cel randomCel(int i,int j) {//remplir une cellule bien d�termin� avec 1 ou 0 d'une maniere al�atoire
+	}//remplir une cellule bien déterminé avec 1 ou 0 d'une maniere aléatoire
+	public static cel randomCel(int i,int j) {
 		cel c=new cel();
 		int nb =(int)(Math.random() * 2);
 		c.val=nb;
@@ -77,6 +79,7 @@ public class Main {
 		}while(complet(table,g.n)==0);
 		return(f);
 		}
+		//cette fonction intialle une grille résolue
 	public static grille initialGrille(init4 m,grille g) {
 		g=viderGrille(g);
 		int t =(int)(Math.random() * 2);
@@ -115,16 +118,16 @@ public class Main {
 			}
 		}
 	return(g);
-	}
-	public static grille randomGrille(grille g) {//remplir une grille avec des 0 et des 1 d'une mani�re al�atoire(n'est pas util)
+	}//remplir une grille avec des 0 et des 1 d'une mani�re al�atoire(n'est pas util)
+	public static grille randomGrille(grille g) {
 		for(int i=0;i<g.n;i++) {
 			for(int j=0;j<g.n;j++) {
 				g.tab[i][j]=randomCel(i,j);
 			}
 		}
 	return(g);
-	}
-	public static grille initial(int taille) {//initialiser la matrice avec des cellules aleatoires
+	}//initialiser la matrice avec des cellules aleatoires
+	public static grille initial(int taille) {
 		grille g=new grille();
 		g.n=taille;
 		cel[][] tableau=new cel[g.n][g.n];
@@ -139,7 +142,7 @@ public class Main {
 	public static grille modifGrille(grille g) {
 		int i,j;
 		cel c=new cel();
-		System.out.print("\nchoisir les coordonn�e du case que vous voulez acc�der\n-ecrire i et j\n");
+		System.out.print("\nchoisir les coordonnée du case que vous voulez accéder\n-ecrire i et j\n");
 		Scanner sc=new Scanner(System.in);
 		i=sc.nextInt();
 		j=sc.nextInt();
@@ -572,7 +575,7 @@ public class Main {
 		choix=sc.nextInt();
 		if((choix!=1)&&(choix!=2)) {
     	do{	
-			System.out.print("choix invalid , veuillez re�ssayez\n1- choisir la difficult�e\n2- Visualiser les meilleurs scores\\n");
+			System.out.print("choix invalid , veuillez reéssayez\n1- choisir la difficult�e\n2- Visualiser les meilleurs scores\\n");
     		choix=sc.nextInt();
 	    }while((choix!=1)&&(choix!=2));
 	}
@@ -584,7 +587,7 @@ public class Main {
 		choix=sc.nextInt();
 		if((choix!=1)&&(choix!=2)) {
     	do{	
-			System.out.print("choix invalid , veuillez re�ssayez\n1- Retourner au menu principale      2- Quitter\n");
+			System.out.print("choix invalid , veuillez reéssayez\n1- Retourner au menu principale      2- Quitter\n");
     		choix=sc.nextInt();
 	    }while((choix!=1)&&(choix!=2));
 	}
@@ -617,53 +620,7 @@ public class Main {
 				f.tab[i][j].indj=g.tab[i][j].indj=j;
 			}
 		}
-		//difficile
-		/*
-		for(int i=0;i<f.n;i++) {
-			int n0=0;
-			int n1=1;
-			for(int j=0;j<f.n;j++) {
-				if(f.tab[i][j].val==0)
-					n0++;
-				if(f.tab[i][j].val==1)
-					n1++;
-			}
-			if(n0==f.n/2) {
-			for(int j=0;j<f.n;j++) {
-				if(f.tab[i][j].val!=0)
-					f.tab[i][j].val=1;
-			}
-			}
-			if(n1==f.n/2) {
-				for(int j=0;j<f.n;j++) {
-					if(f.tab[i][j].val!=1)
-						f.tab[i][j].val=0;
-				}
-				}
-		}
-		for(int j=0;j<f.n;j++) {
-			int n0=0;
-			int n1=1;
-			for(int i=0;i<f.n;i++) {
-				if(f.tab[i][j].val==0)
-					n0++;
-				if(f.tab[i][j].val==1)
-					n1++;
-			}
-			if(n0==f.n/2) {
-			for(int i=0;i<f.n;i++) {
-				if(f.tab[i][j].val!=0)
-					f.tab[i][j].val=1;
-			}
-			}
-			if(n1==f.n/2) {
-				for(int i=0;i<f.n;i++) {
-					if(f.tab[i][j].val!=1)
-						f.tab[i][j].val=0;
-				}
-				}
-		}*/
-		//fin difficile
+
 	
 		do{
 		// pour 6*6	
@@ -794,7 +751,7 @@ public class Main {
 		choix=sc.nextInt();
 		if((choix!=1)&&(choix!=2)&&(choix!=3)) {
     	do{	
-			System.out.print("choix invalid , veuillez re�ssayez\n1- facile (4*4)   2- moyenne (8*8)   3- difficile (12*12)\n");
+			System.out.print("choix invalid , veuillez reéssayez\n1- facile (4*4)   2- moyenne (8*8)   3- difficile (12*12)\n");
     		choix=sc.nextInt();
 	    }while((choix!=1)&&(choix!=2)&&(choix!=3));
 	}
